@@ -32,10 +32,10 @@ around the ratio and the description.
 - [ ] Instead of loading an external file for the ratios (`ratios.scd`), write
       the ratios in a `.json` file and parse them in SuperCollider using:
 	  
-	  ``` supercollider
-	  var file = File.read("ratios.json", "r");
-	  var string = file.readAllString;
-	  
-	  var ratios = string.parseJSON;
-	  ```
+``` supercollider
+ var file = File.read("ratios.json", "r");
+ var string = file.readAllString;
+ 
+ var ratios = string.parseJSON;
+ ```
 	  
