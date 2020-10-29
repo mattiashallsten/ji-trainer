@@ -55,21 +55,6 @@ s.waitForBoot{
 
 	// ** Ratios
 	ratios = ~ratios;
-	// ratios = [
-	// 	~ratioConstructor.value("11/10", "Neutral second", 11, 1),
-	// 	~ratioConstructor.value("9/8", "Pure second", 3, 1),
-	// 	~ratioConstructor.value("7/6", "Septimal minor third", 7, 1),
-	// 	~ratioConstructor.value("6/5", "Just minor third", 5, 0),
-	// 	~ratioConstructor.value("5/4", "Just major third", 5, 1),
-	// 	~ratioConstructor.value("4/3", "Pure fourth", 3, 1),
-	// 	~ratioConstructor.value("11/8", "Undecimal tritone", 11, 1),
-	// 	~ratioConstructor.value("3/2", "Perfect fifth", 3, 0),
-	// 	~ratioConstructor.value("8/5", "Just minor sixth", 5, 0),
-	// 	~ratioConstructor.value("5/3", "Just major sixth", 5, 0),
-	// 	~ratioConstructor.value("27/16", "Pythagorean major sixth", 3, 0),
-	// 	~ratioConstructor.value("7/4", "Harmonic seventh", 7, 1),
-	// 	~ratioConstructor.value("15/8", "Just major seventh", 5, 0),
-	// ];
 
 	// ** Selectable ratios
 	selectableRatios = ratios.collect{|i| i};

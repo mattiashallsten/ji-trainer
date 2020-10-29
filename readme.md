@@ -13,7 +13,7 @@ where it says "Add new ratio here:".
 
 The new ratio must follow the same scheme as the other ones, namely:
 
-``` sclang
+``` supercollider
 
 ~ratioConstructor.value(
 	ratio: "<ratio>",
