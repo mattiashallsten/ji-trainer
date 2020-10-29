@@ -26,3 +26,16 @@ The new ratio must follow the same scheme as the other ones, namely:
 
 Make sure to add the comma at the end, and to have quotation marks
 around the ratio and the description.
+
+## TODO
+
+- [ ] Instead of loading an external file for the ratios (`ratios.scd`), write
+      the ratios in a `.json` file and parse them in SuperCollider using:
+	  
+	  ``` supercollider
+	  var file = File.read("ratios.json", "r");
+	  var string = file.readAllString;
+	  
+	  var ratios = string.parseJSON;
+	  ```
+	  
