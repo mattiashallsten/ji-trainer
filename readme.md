@@ -61,8 +61,7 @@ Here you can interactively add or change ratios. Make sure to hit the Enter key 
 
 ## Add ratios
 
-To add ratios, open the file `ratios.json` and start writing below where it says
-"Add new ratio here:".
+To add ratios you can either open the ratio editor when running the application, or open the file `ratios.json` before running the application and start writing below where it says "Add new ratio here:".
 
 The new ratio must follow the same scheme as the other ones, namely:
 
