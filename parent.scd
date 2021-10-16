@@ -51,6 +51,7 @@ s.waitForBoot{
 	// ** GUI: er variables
 	var erWindow;
 	var erOpen = false;
+	var erLines, erAddButton;
 
 	// ** FUNCTIONS
 	// *** Function: playSines
@@ -543,23 +544,88 @@ s.waitForBoot{
 				erOpen = false;
 			};
 
-			StaticText(erWindow, Rect(5, 5, erWindow.bounds.width * 0.3, 20))
+			StaticText(
+				erWindow,
+				Rect(
+					30,
+					40,
+					erWindow.bounds.width * 0.3,
+					20
+				)
+			)
 			.string_("Ratio")
 			.font_(standardfont);
 
-			StaticText(erWindow, Rect(erWindow.bounds.width * 0.32, 5, erWindow.bounds.width * 0.3, 20))
+			StaticText(
+				erWindow,
+				Rect(
+					erWindow.bounds.width * 0.32,
+					40,
+					erWindow.bounds.width * 0.3,
+					20
+				)
+			)
 			.string_("Description")
 			.font_(standardfont);
 
-			StaticText(erWindow, Rect(erWindow.bounds.width * 0.9, 5, erWindow.bounds.width * 0.3, 20))
+			StaticText(
+				erWindow,
+				Rect(
+					erWindow.bounds.width * 0.9,
+					40,
+					erWindow.bounds.width * 0.3,
+					20
+				)
+			)
 			.string_("Fav?")
 			.font_(standardfont);
 
-			ratios.do{|r, i|
-				TextField(erWindow, Rect(
-					5,
-					(i + 1) * 30 + 5,
-					erWindow.bounds.width * 0.3,
+			updateErLayout.();
+
+			
+
+			erWindow.front;
+			format("ratio editor is open: %", erOpen.asString).postln;
+		});
+	};
+	// *** Function: updateErLayout
+	var updateErLayout = {
+		if(erLines.notNil, {
+			erLines.do{|l|
+				l[\ratio].remove;
+				l[\description].remove;
+				l[\fav].remove;
+				l[\remove].remove;
+			};
+			erLines = nil;
+		});
+
+		if(erAddButton.notNil, { erAddButton.remove; erAddButton = nil });
+
+		erLines = ratios.collect{|r, i|
+			(
+				remove: Button(
+					erWindow,
+					Rect(
+						5,
+						(i + 2) * 30 + 5,
+						20,
+						20
+					)
+				)
+				.states_([["-"]])
+				.font_(standardfont)
+				.action_{
+					ratios.removeAt(i);
+					getSelectableLimits.();
+					updateSelectableRatios.();
+					updateErLayout.();
+				},
+				// ratio
+				ratio: TextField(erWindow, Rect(
+					30,
+					(i + 2) * 30 + 5,
+					erWindow.bounds.width * 0.2,
 					20
 				))
 				.font_(standardfont)
@@ -568,13 +634,14 @@ s.waitForBoot{
 					ratios[i].setRatioWithString(field.value);
 					getSelectableLimits.();
 					updateSelectableRatios.();
-
-					openErFunc.(true)
-				};
-
+					updateErLayout.();
+				},
+				
+				description:
+				// description
 				TextField(erWindow, Rect(
 					erWindow.bounds.width * 0.32,
-					(i + 1) * 30 + 5,
+					(i + 2) * 30 + 5,
 					erWindow.bounds.width * 0.6,
 					20
 				))
@@ -584,45 +651,42 @@ s.waitForBoot{
 					ratios[i].setDescription(field.value);
 					getSelectableLimits.();
 					updateSelectableRatios.();
-					openErFunc.(true)
-				};
+				},
 
+				// fav
+				fav:
 				CheckBox(erWindow, Rect(
 					erWindow.bounds.width * 0.95,
-					(i + 1) * 30 + 5,
+					(i + 2) * 30 + 5,
 					20,
 					20
 				))
 				.font_(standardfont)
-				.value_(r.fav);
-			};
-
-			Button(
-				erWindow,
-				Rect(
-					erWindow.bounds.width * 0.1,
-					(ratios.size + 1) * 30,
-					erWindow.bounds.width * 0.8,
-					20
-				)
+				.value_(r.fav)
+				.action_{|checkbox|
+					r.setFav(checkbox.value);
+					updateSelectableRatios.();
+				};
 			)
-			.font_(standardfont)
-			.states_([["+"]])
-			.action_{
-				// *** TODO: does not add to the list
-				ratios = ratios.add(Ratio(1,1));
-				getSelectableLimits.();
-				updateSelectableRatios.();
-				openErFunc.(true)
-			};
+		};
 
-			erWindow.front;
-			format("ratio editor is open: %", erOpen.asString).postln;
-		});
-	};
-
-	var updateErLayout = {
-
+		erAddButton = Button(
+			erWindow,
+			Rect(
+				erWindow.bounds.width * 0.1,
+				10,
+				erWindow.bounds.width * 0.8,
+				20
+			)
+		)
+		.font_(standardfont)
+		.states_([["+"]])
+		.action_{
+			ratios = ratios.add(Ratio(1,1));
+			getSelectableLimits.();
+			updateSelectableRatios.();
+			updateErLayout.();
+		};
 	};
 
 	// * SynthDef
