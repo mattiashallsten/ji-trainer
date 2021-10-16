@@ -29,25 +29,6 @@ The new ratio must follow the same scheme as the other ones, namely:
 Make sure to add the comma at the end, and to have quotation marks around the
 description.
 
-To add ratios, open the file <ratios.scd> and start writing below
-where it says "Add new ratio here:".
-
-The new ratio must follow the same scheme as the other ones, namely:
-
-``` supercollider
-
-~ratioConstructor.value(
-	ratio: "<ratio>",
-	description: "<description>",
-	limit: <the limit as a whole-number,
-	fav: <1 if it is a favourite, 0 if not>
-),
-
-```
-
-Make sure to add the comma at the end, and to have quotation marks
-around the ratio and the description.
-
 ## TODO
 
 - [x] Instead of loading an external file for the ratios (`ratios.scd`), write
