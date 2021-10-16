@@ -1,0 +1,89 @@
+[
+    {
+	"ratio": 11/10,
+	"description": "Neutral second",
+	"fav": 1
+    },
+    {
+	"ratio": 10/9,
+	"description": "Minor whole-tone",
+	"fav": 0
+    },
+    {
+	"ratio": 9/8,
+	"description": "Pure second",
+	"fav": 1
+    },
+    {
+	"ratio": 7/6,
+	"description": "Septimal minor third",
+	"fav": 1
+    },
+    {
+	"ratio": 6/5,
+	"description": "Just minor third",
+	"fav": 0
+    },
+    {
+	"ratio": 5/4,
+	"description": "Just major third",
+	"fav": 1
+    },
+    {
+	"ratio": 81/64,
+	"description": "Pythagorean major third",
+	"fav": 0
+    },
+    {
+	"ratio": 4/3,
+	"description": "Pure fourth",
+	"fav": 1
+    },
+    {
+	"ratio": 11/8,
+	"description": "Undecimal tritone",
+	"fav": 1
+    },
+    {
+	"ratio": 3/2,
+	"description": "Perfect fifth",
+	"fav": 0
+    },
+    {
+	"ratio": 8/5,
+	"description": "Just minor sixth",
+	"fav": 0
+    },
+    {
+	"ratio": 13/8,
+	"fav": 0
+    },
+    {
+	"ratio": 1,
+	"description": "error test",
+	"fav": 0
+    },
+    {
+	"fav": 0
+    },
+    {
+	"ratio": 5/3,
+	"description": "Just major sixth",
+	"fav": 0
+    },
+    {
+	"ratio": 27/16,
+	"description": "Pythagorean major sixth",
+	"fav": 0
+    },
+    {
+	"ratio": 7/4,
+	"description": "Harmonic seventh",
+	"fav": 1
+    },
+    {
+	"ratio": 15/8,
+	"description": "Just major seventh",
+	"fav": 0
+    },
+]
