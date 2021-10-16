@@ -58,6 +58,8 @@ Here you can interactively add or change ratios. Make sure to hit the Enter key 
 2. **Description**: A custom description of the ratio.
 3. **Favourite**: Whether or not the ratio is a favourite. Currently
    not working.
+4. **Add ratio**: Click here to add a 1/1 ratio without a description
+   to the list of ratios.
 
 ## Add ratios
 
