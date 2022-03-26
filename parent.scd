@@ -1,13 +1,13 @@
-// =====================================================================
-// SuperCollider Workspace
-// =====================================================================
-
 (
 s.waitForBoot{
 	// * Variables
 	// ** Path
+	var guiTitle = "Just Intonation Trainer";
+	var guiAuthor = "Mattias Hållsten, 2020-2022";
+
 	var path = PathName(thisProcess.nowExecutingPath).pathOnly;
 	var ratios, selectableRatios;
+	var gannRatios = Dictionary(), autoDesc = true;
 
 	var routine, notes; 				// used in `playSines' function
 	var crNote;
@@ -45,7 +45,8 @@ s.waitForBoot{
 	var standardfont = Font.monospace(12);
 
 	// ** GUI: cr variables
-	var crWindow, crDown, crUp, crDisplay;
+	var crWindow, crDown, crUp, crDisplay, crDDown, crDUp;
+	var crSlider;
 	var crOpen = false;
 
 	// ** GUI: er variables
@@ -207,6 +208,26 @@ s.waitForBoot{
 		})
 	};
 
+	// *** Function: loadGannRatios
+	var loadGannRatios = {
+		gannRatios = File(path ++ "gann.json", "r").readAllString.parseJSON;
+	};
+
+	// *** Function: applyGannDescriptions
+	var applyGannDescriptions = {|ratio|
+		if(ratio.notNil, {
+			if(gannRatios[ratio.asString].notNil, {
+				ratio.setDescription(gannRatios[ratio.asString])
+			})
+		}, {
+			ratios.do{|r|
+				if(gannRatios[r.asString].notNil, {
+					r.setDescription(gannRatios[r.asString])
+				})
+			}
+		});
+	};
+
 	// *** Function: calculateRoot
 	var calculateRoot = {
 		var r = selectOctave.value * 12 + selectNote.value;
@@ -216,7 +237,9 @@ s.waitForBoot{
 
 	// *** Function: init
 	var initVariables = {
+		loadGannRatios.();
 		ratios = loadRatios.();
+		if(autoDesc, { applyGannDescriptions.() });
 		selectableRatios = ratios.collect{|i| i};
 		(0..20).do{|i| currentLimits[i.nthPrime] = true};
 		getSelectableLimits.();
@@ -228,51 +251,64 @@ s.waitForBoot{
 		window.layout = VLayout(
 			// * GUI: Title
 			StaticText()
-			.string_("Just Intonation Trainer")
+			.string_(guiTitle)
 			.font_(Font.monospace(size: 30))
 			.align_(\center),
 
 			StaticText()
-			.string_("Mattias Hållsten, 2020-2021")
+			.string_(guiAuthor)
 			.font_(Font.monospace(size: 14))
 			.align_(\right),
 
+
 			HLayout(
+				[UserView(), stretch: 1],
 				StaticText()
 				.string_("Select output:")
 				.font_(standardfont),
 
 				[selectOutput = PopUpMenu()
-				.items_(outDevices.collect{|d| d.asString})
-				.font_(standardfont)
-				.action_{|menu|
-					outputDevice = outDevices[menu.value];
-					s.options.outDevice = outputDevice;
-				}, stretch: 1],
+					.items_(outDevices.collect{|d| d.asString})
+					.font_(standardfont)
+					.action_{|menu|
+						outputDevice = outDevices[menu.value];
+						s.options.outDevice = outputDevice;
+					}, stretch: 1],
 
 				rebootServerBtn = Button()
 				.states_([["Reboot audio server"]])
 				.font_(standardfont)
-				.action_{ s.reboot }
+				.action_{ s.reboot },
 
 				
 			),
 
 			HLayout(
 				// *** GUI: openCrButton
-				openCrButton = Button()
-				.font_(standardfont)
-				.states_([["Calibrate root"]])
-				.action_{
-					openCrFunc.()
-				},
+				[openCrButton = Button()
+					.font_(standardfont)
+					.states_([["Calibrate root"]])
+					.action_{
+						openCrFunc.()
+					}, stretch: 3],
 				// *** GUI: openErButton
-				openErButton = Button()
+				[openErButton = Button()
+					.font_(standardfont)
+					.states_([["Ratio editor"]])
+					.action_{
+						openErFunc.()
+					}, stretch: 3],
+
+				CheckBox()
+				.string_("Use Gann descriptions?")
 				.font_(standardfont)
-				.states_([["Ratio editor (EXPERIMENTAL)"]])
-				.action_{
-					openErFunc.()
-				}
+				.value_(autoDesc)
+				.action_{|box|
+					autoDesc = box.value;
+					autoDesc.postln;
+				},
+
+
 			),
 
 
@@ -338,11 +374,13 @@ s.waitForBoot{
 				.minSize_(Size(200, 0))
 				.font_(standardfont)
 				.action_{|field|
-					var val = field.value;
-					//var compiled = this.compile(selectableRatios[val].ratio);
-					var compiled = this.compile(selectableRatios[val].print);
+					selectedRatio = selectableRatios[field.value].asNum;
+					// var val = field.value;
+					// //var compiled = this.compile(selectableRatios[val].ratio);
+					// var compiled = this.compile(selectableRatios[val].print);
 
-					selectedRatio = compiled.value;
+					// selectedRatio = compiled.value;
+					selectedRatio.postln;
 				},
 
 				StaticText().string_("Root:" ).font_(standardfont),
@@ -488,38 +526,67 @@ s.waitForBoot{
 				\rel, 2
 			]);
 			
-			crWindow = Window.new("Calibrate root", Rect(400, 600, 400, 200))
+			crWindow = Window.new("Calibrate root", Rect(400, 600, 400, 100))
 			.onClose_{
 				if(crNote.notNil, { crNote.set(\gate, 0); crNote = nil } );
 				crOpen = false;
 			};
 
 			crWindow.layout = VLayout(
-				crDisplay = TextField()
-				.font_(Font.monospace(20))
-				.string_(globalRoot.asString)
-				.align_(\center)
-				.action_{|field|
-					var val = this.compile(field.value).value;
-					crNote.set(\freq, val);
-					selectRoot.valueAction_(val);
-				},
+				HLayout(
+					crDisplay = TextField()
+					.font_(Font.monospace(20))
+					.string_(globalRoot.asString)
+					.align_(\center)
+					.action_{|field|
+						var val = this.compile(field.value).value;
+						crNote.set(\freq, val);
+						selectRoot.valueAction_(val);
+					},
+
+					StaticText()
+					.string_("Hz")
+					.font_(Font.monospace(20))
+				),
 
 				HLayout(
 					crDown = Button()
 					.font_(Font.monospace(20))
-					.states_([["<"]])
+					.string_("<<")
 					.action_{
 						crDisplay.valueAction_(globalRoot - 1);
 					},
 
+					crDDown = Button()
+					.font_(Font.monospace(20))
+					.string_("<")
+					.action_{
+						crDisplay.valueAction_(globalRoot - 0.1)
+					},
+
+					crDUp = Button()
+					.font_(Font.monospace(20))
+					.string_(">")
+					.action_{
+						crDisplay.valueAction_(globalRoot + 0.1)
+					},
+
 					crUp = Button()
 					.font_(Font.monospace(20))
-					.states_([[">"]])
+					.string_(">>")
 					.action_{
 						crDisplay.valueAction_(globalRoot + 1);
 					},
-				)
+				),
+
+				crSlider = Slider()
+				.orientation_(\horizontal)
+				.value_(globalRoot.lincurve(100,800,0.0,1.0,-2))
+				.action_{|slider|
+					var val = slider.value.lincurve(0.0,1.0,100,800,2).round(0.01);
+
+					crDisplay.valueAction_(val);
+				}
 
 					
 			);
@@ -537,9 +604,9 @@ s.waitForBoot{
 			erOpen = false;
 			openErFunc.();
 		}, {
-			"ratio editor was close. opening...".postln;
+			"ratio editor was closed. opening...".postln;
 			erOpen = true;
-			erWindow = Window.new("Ratio editor", Rect(400, 400, 400, 600), scroll: true)
+			erWindow = Window.new("Ratio editor", Rect(400, 400, 500, 600), scroll: true)
 			.onClose_{
 				erOpen = false;
 			};
@@ -632,6 +699,7 @@ s.waitForBoot{
 				.string_(r.asString)
 				.action_{|field|
 					ratios[i].setRatioWithString(field.value);
+					if(autoDesc, { applyGannDescriptions.(ratios[i]) } );
 					getSelectableLimits.();
 					updateSelectableRatios.();
 					updateErLayout.();
@@ -640,9 +708,9 @@ s.waitForBoot{
 				description:
 				// description
 				TextField(erWindow, Rect(
-					erWindow.bounds.width * 0.32,
+					erWindow.bounds.width * 0.28,
 					(i + 2) * 30 + 5,
-					erWindow.bounds.width * 0.6,
+					erWindow.bounds.width * 0.62,
 					20
 				))
 				.font_(standardfont)

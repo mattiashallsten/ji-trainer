@@ -1,4 +1,4 @@
-# Just intonation trainer
+% Just intonation trainer
 
 ## Dependencies
 
@@ -11,7 +11,7 @@ cursor right under where it says s.waitForBoot. Hit Cmd+Enter on Mac,
 Ctrl+Enter on PC.
 
 ### Main screen
-![Main screen](./images/main.png)
+	![Main screen](./images/main.png)
 
 Upon launching the application, this screen will appear. Here is where you can change a few settings as well as start playing the sine or sawtooth waves.
 
